@@ -42,6 +42,7 @@ module datapath(
 	input wire regwriteM,
 	output wire[31:0] aluoutM,writedataM,
 	input wire[31:0] readdataM,
+	output wire hilo_writeM,
 	//writeback stage
 	input wire memtoregW,
 	input wire regwriteW
@@ -72,6 +73,8 @@ module datapath(
 	//writeback stage
 	wire [4:0] writeregW;
 	wire [31:0] aluoutW,readdataW,resultW;
+	
+	wire overflow;
 
 	//hazard detection
 	hazard h(
@@ -137,14 +140,19 @@ module datapath(
 	mux3 #(32) forwardaemux(srcaE,resultW,aluoutM,forwardaE,srca2E);
 	mux3 #(32) forwardbemux(srcbE,resultW,aluoutM,forwardbE,srcb2E);
 	mux2 #(32) srcbmux(srcb2E,signimmE,alusrcE,srcb3E);
-	alu alu(srca2E,srcb3E,alucontrolE,aluoutE,saE);
+	//HILO的输出在MEM阶段   输出到ALU中在EX阶段  
+	alu alu(.clk(clk),.rst(rst),.a(srca2E),.b(srcb3E),.op(alucontrolE),.sa(saE),.hilo_in(hilo_outM),.y(aluoutE),.hilo_out(hilo_inE),.overflow(overflow));
 	mux2 #(5) wrmux(rtE,rdE,regdstE,writeregE);
 
 	//mem stage
 	flopr #(32) r1M(clk,rst,srcb2E,writedataM);
 	flopr #(32) r2M(clk,rst,aluoutE,aluoutM);
 	flopr #(5) r3M(clk,rst,writeregE,writeregM);
+	flopenrc #(64) r4M(clk,rst,~stallM,flushM,hilo_inE,hilo_inM);
 
+	//hilo设置在memory阶段
+	//hilo_reg hilo(.clk(~clk),.rst(rst),.we(hilo_writeM&~stall_divM),.hi_i(hilo_inM[63:32]),.lo_i(hilo_inM[31:0]),.hi_o(hilo_outM[63:32]),.lo_o(hilo_outM[31:0]));
+	
 	//writeback stage
 	flopr #(32) r1W(clk,rst,aluoutM,aluoutW);
 	flopr #(32) r2W(clk,rst,readdataM,readdataW);

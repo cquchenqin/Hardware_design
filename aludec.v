@@ -44,6 +44,12 @@ module aludec(
 				`FUNC_SLLV:	alucontrol = `SIG_ALU_SLLV;
 				`FUNC_SRLV:	alucontrol = `SIG_ALU_SRLV;
 				`FUNC_SRAV:	alucontrol = `SIG_ALU_SRAV;
+				//hilo
+				`FUNC_MFHI: alucontrol = `ALU_MFHI;
+				`FUNC_MFLO: alucontrol = `ALU_MFLO;
+				`FUNC_MTHI: alucontrol = `ALU_MTHI;
+				`FUNC_MTLO: alucontrol = `ALU_MTLO;
+				
 				default: alucontrol = `SIG_ALU_FAIL;				
 			endcase
 		end
