@@ -5,7 +5,7 @@
 
 // logic instruction (LOG)
 // LOG - opcode
-`define OP_RTYPE     6'b00_0000
+`define OP_     6'b00_0000
 `define	OP_AND	        6'b00_0000
 `define	OP_OR	        6'b00_0000
 `define OP_XOR	        6'b00_0000
