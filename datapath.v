@@ -152,7 +152,7 @@ module datapath(
 
 	//hilo设置在memory阶段
 	//hilo_reg hilo(.clk(~clk),.rst(rst),.we(hilo_writeM&~stall_divM),.hi_i(hilo_inM[63:32]),.lo_i(hilo_inM[31:0]),.hi_o(hilo_outM[63:32]),.lo_o(hilo_outM[31:0]));
-	//....dcc
+	//dcc
 	
 	//writeback stage
 	flopr #(32) r1W(clk,rst,aluoutM,aluoutW);
