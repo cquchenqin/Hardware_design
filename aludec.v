@@ -50,6 +50,12 @@ module aludec(
 				`FUNC_MTHI: alucontrol = `ALU_MTHI;
 				`FUNC_MTLO: alucontrol = `ALU_MTLO;
 				
+				//mul_div
+				`FUNC_MULT: alucontrol = `ALU_MULT;
+				`FUNC_MULTU:alucontrol = `ALU_MULTU;
+				`FUNC_DIV:  alucontrol = `ALU_DIV;
+				`FUNC_DIVU: alucontrol = `ALU_DIVU; 
+
 				default: alucontrol = `SIG_ALU_FAIL;				
 			endcase
 		end

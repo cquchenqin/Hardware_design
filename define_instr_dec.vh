@@ -42,6 +42,11 @@
 `define FUNC_MFLO  	6'b010010
 `define FUNC_MTLO  	6'b010011
 
+//mul_div
+`define FUNC_MULT 6'b011000
+`define FUNC_MULTU  6'b011001
+`define FUNC_DIV 6'b011010
+`define FUNC_DIVU 6'b011011  
 
 
 // trap instruction (TRAP)

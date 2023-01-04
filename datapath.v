@@ -42,7 +42,8 @@ module datapath(
 	input wire regwriteM,
 	output wire[31:0] aluoutM,writedataM,
 	input wire[31:0] readdataM,
-	output wire hilo_writeM,
+	input wire hilo_writeM,
+	input wire stall_divM,
 	//writeback stage
 	input wire memtoregW,
 	input wire regwriteW
@@ -68,12 +69,15 @@ module datapath(
 	wire [31:0] srcaE,srca2E,srcbE,srcb2E,srcb3E;
 	wire [31:0] aluoutE;
 	wire [4:0] saE;
+	wire stall_divE;
+	wire [63:0] hilo_inE;
 	//mem stage
 	wire [4:0] writeregM;
 	//writeback stage
 	wire [4:0] writeregW;
 	wire [31:0] aluoutW,readdataW,resultW;
-	
+	wire [63:0] hilo_inM;
+	wire [63:0] hilo_outM;
 	wire overflow;
 
 	//hazard detection
@@ -91,6 +95,7 @@ module datapath(
 		regwriteE,
 		memtoregE,
 		forwardaE,forwardbE,
+		stall_divE,
 		flushE,
 		//mem stage
 		writeregM,
@@ -141,7 +146,19 @@ module datapath(
 	mux3 #(32) forwardbemux(srcbE,resultW,aluoutM,forwardbE,srcb2E);
 	mux2 #(32) srcbmux(srcb2E,signimmE,alusrcE,srcb3E);
 	//HILO的输出在MEM阶段   输出到ALU中在EX阶段  
-	alu alu(.clk(clk),.rst(rst),.a(srca2E),.b(srcb3E),.op(alucontrolE),.sa(saE),.hilo_in(hilo_outM),.y(aluoutE),.hilo_out(hilo_inE),.overflow(overflow));
+	alu alu(
+		.clk(clk),
+		.rst(rst),
+		.a(srca2E),
+		.b(srcb3E),
+		.op(alucontrolE), //5'b
+		.sa(saE), 
+		.hilo_in(hilo_outM),
+		.y(aluoutE),
+		.hilo_out(hilo_inE),
+		.overflow(overflow),
+		.stall_div(stall_divE) //除法，暂停流水线，EX阶段后可用  （改hazard）
+		);
 	mux2 #(5) wrmux(rtE,rdE,regdstE,writeregE);
 
 	//mem stage
@@ -150,9 +167,10 @@ module datapath(
 	flopr #(5) r3M(clk,rst,writeregE,writeregM);
 	flopenrc #(64) r4M(clk,rst,~stallM,flushM,hilo_inE,hilo_inM);
 
-	//hilo设置在memory阶段
-	//hilo_reg hilo(.clk(~clk),.rst(rst),.we(hilo_writeM&~stall_divM),.hi_i(hilo_inM[63:32]),.lo_i(hilo_inM[31:0]),.hi_o(hilo_outM[63:32]),.lo_o(hilo_outM[31:0]));
-	//dcc
+	//hilo设置在memory阶段  修改hi lo 寄存器的写信息
+	//stallE -> stall_divM
+	hilo_reg hilo(.clk(~clk),.rst(rst),.we(hilo_writeM&~stall_divM),.hi_i(hilo_inM[63:32]),.lo_i(hilo_inM[31:0]),.hi_o(hilo_outM[63:32]),.lo_o(hilo_outM[31:0]));
+	
 	
 	//writeback stage
 	flopr #(32) r1W(clk,rst,aluoutM,aluoutW);

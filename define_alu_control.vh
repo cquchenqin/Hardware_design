@@ -2,7 +2,22 @@
  * this header defines the control signal of ALU from decoder
  * 这一个文件头定义了从译码器到ALU的控制信号宏
  */
- 
+`define RstEnable 		1'b1
+`define RstDisable		1'b0
+`define ZeroWord		32'h00000000
+
+
+//div
+`define DivFree 2'b00
+`define DivByZero 2'b01
+`define DivOn 2'b10
+`define DivEnd 2'b11
+`define DivResultReady 1'b1
+`define DivResultNotReady 1'b0
+`define DivStart 1'b1
+`define DivStop 1'b0
+
+
 // logic instruction
 `define SIG_ALU_AND     5'b00_000
 `define SIG_ALU_OR      5'b00_001
@@ -23,6 +38,11 @@
 `define ALU_MFLO        5'b1_0011
 `define ALU_MTLO        5'b1_0100
 
+// mul_div
+`define ALU_MULT    5'b11000
+`define ALU_MULTU   5'b11001
+`define ALU_DIV     5'b11010
+`define ALU_DIVU    5'b11011
 
 
 // fail

@@ -58,6 +58,12 @@ module maindec(
                    `FUNC_MTHI:controls <= 8'b11000001;//MTXX类型   将通用寄存器中的值写入hilo寄存器中 hilo_write=1
                    `FUNC_MFLO:controls <= 8'b11000000;
                    `FUNC_MTLO:controls <= 8'b11000001;
+			//mul_div
+					`FUNC_MULT:controls<= 8'b00000001;
+					`FUNC_MULTU:controls<= 8'b00000001;
+					`FUNC_DIV:controls <= 8'b00000001;
+					`FUNC_DIVU:controls <= 8'b00000001; 
+
                    default:begin
                         controls <= 8'b00000000;
                    end

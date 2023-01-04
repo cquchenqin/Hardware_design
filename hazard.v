@@ -34,6 +34,7 @@ module hazard(
 	input wire regwriteE,
 	input wire memtoregE,
 	output reg[1:0] forwardaE,forwardbE,
+	input wire stall_divE,
 	output wire flushE,
 	//mem stage
 	input wire[4:0] writeregM,

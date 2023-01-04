@@ -30,6 +30,7 @@ module controller(
 	output wire is_IMM,
 	//execute stage
 	input wire flushE,
+	input wire stallE,
 	output wire memtoregE,alusrcE,
 	output wire regdstE,regwriteE,	
 	output wire[4:0] alucontrolE,
@@ -37,6 +38,7 @@ module controller(
 	//mem stage
 	output wire memtoregM,memwriteM,
 				regwriteM,hilo_writeM,
+	output wire stall_divM,
 	//write back stage
 	output wire memtoregW,regwriteW
 
@@ -66,17 +68,18 @@ module controller(
 	assign pcsrcD = branchD & equalD;
 
 	//pipeline registers
-	floprc #(10) regE(
+	flopenrc #(12) regE(
 		clk,
 		rst,
+		~stallE,
 		flushE,
 		{memtoregD,memwriteD,alusrcD,regdstD,regwriteD,alucontrolD,hilo_writeD},
 		{memtoregE,memwriteE,alusrcE,regdstE,regwriteE,alucontrolE,hilo_writeE}
 		);
-	flopr #(8) regM(
+	flopr #(10) regM(
 		clk,rst,
-		{memtoregE,memwriteE,regwriteE,hilo_writeE},
-		{memtoregM,memwriteM,regwriteM,hilo_writeM}
+		{memtoregE,memwriteE,regwriteE,stallE,hilo_writeE},
+		{memtoregM,memwriteM,regwriteM,stall_divM,hilo_writeM}
 		);
 	flopr #(8) regW(
 		clk,rst,
