@@ -23,5 +23,12 @@
 `define ALU_MTHI        5'b01_101
 `define ALU_MTLO        5'b01_110
 
+// arith
+`define ALU_ADD         5'b01_111
+`define ALU_ADDU        5'b10_000
+`define ALU_SUB         5'b10_001
+`define ALU_SUBU        5'b10_010
+`define ALU_SLT         5'b10_011
+`define ALU_SLTU        5'b10_100
 // fail
 `define SIG_ALU_FAIL    5'b11_111

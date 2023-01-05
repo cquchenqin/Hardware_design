@@ -49,15 +49,26 @@ module aludec(
 				`FUNC_MFLO: alucontrol = `ALU_MFLO;
 				`FUNC_MTHI: alucontrol = `ALU_MTHI;
 				`FUNC_MTLO: alucontrol = `ALU_MTLO;
+				//arith
+				`FUNC_ADD: 	alucontrol = `ALU_ADD;
+				`FUNC_ADDU:	alucontrol = `ALU_ADDU;
+				`FUNC_SUB:	alucontrol = `ALU_SUB;
+				`FUNC_SUBU: alucontrol = `ALU_SUBU;
+				`FUNC_SLT:  alucontrol = `ALU_SLT;
+				`FUNC_SLTU: alucontrol = `ALU_SLTU;
 				default: alucontrol = `SIG_ALU_FAIL;				
 			endcase
 		end
 		else begin
 			case(op)
-				`OP_ANDI: alucontrol=`SIG_ALU_AND;
-				`OP_XORI: alucontrol=`SIG_ALU_XOR;
-				`OP_LUI: alucontrol=`SIG_ALU_LUI;
-				`OP_ORI: alucontrol=`SIG_ALU_OR;
+				`OP_ANDI: alucontrol = `SIG_ALU_AND;
+				`OP_XORI: alucontrol = `SIG_ALU_XOR;
+				`OP_LUI:  alucontrol = `SIG_ALU_LUI;
+				`OP_ORI:  alucontrol = `SIG_ALU_OR;
+				`OP_ADDI: alucontrol = `ALU_ADD;
+				`OP_ADDIU:alucontrol = `ALU_ADDU;
+				`OP_SLTI: alucontrol = `ALU_SLT;
+				`OP_SLTIU:alucontrol = `ALU_SLTU;
 				default: alucontrol=`SIG_ALU_FAIL;
 			endcase
 		end

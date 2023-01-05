@@ -46,8 +46,45 @@ module alu(
 			`SIG_ALU_SRLV: 	y = b >> a;
 			`SIG_ALU_SRAV: 	y = $signed(b) >>> a;
 			//move
-			`ALU_MTHI: y=a;
-			`ALU_MTLO: y=a;
+			`ALU_MTHI: 		y = a;
+			`ALU_MTLO: 		y = a;
+			//arith
+			`ALU_ADD: 		y = $signed(a)+$signed(b);
+			`ALU_ADDU:		y = a + b;
+			`ALU_SUB: 		y = $signed(a)-$signed(b);
+			`ALU_SUBU:		y = a - b;
+			`ALU_SLT:
+			begin
+				if (a[31]==0) begin
+					if (b[31]==1) begin
+						y = 0;
+					end
+					else if (a < b) begin
+						y = 1;
+					end
+					else begin
+						y = 0;
+					end
+				end
+				else begin
+					if (b[31]==0) begin
+						y = 1;
+					end
+					else if (a < b) begin
+						y = 1;
+					end
+					else begin
+						y = 0;
+					end
+				end
+			end
+			`ALU_SLTU: 
+			begin
+				if (a<b)
+					y = 1;
+				else
+					y = 0;
+			end
 			// fail
 			`SIG_ALU_FAIL:	y <= 32'b0;
 			default: y<= 32'b0;
