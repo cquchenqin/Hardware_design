@@ -21,7 +21,6 @@ module mycpu_top(
 	wire [31:0] instr;
 	wire memwrite;
 	wire [31:0] aluout, writedata, readdata;
-	wire hilo_writeM,stall_divM;
 	wire [39:0] ascii;
     mips mips(
         .clk(clk),
@@ -35,9 +34,7 @@ module mycpu_top(
         .memwriteM(memwrite),
         .aluoutM(aluout),
         .writedataM(writedata),
-        .readdataM(readdata),
-        .hilo_writeM(hilo_writeM),
-        .stall_divM(stall_divM)
+        .readdataM(readdata)
     );
 
     assign inst_sram_en = 1'b1;     //濡傛灉鏈塱nst_en锛屽氨鐢╥nst_en

@@ -34,16 +34,21 @@ module hazard(
 	input wire regwriteE,
 	input wire memtoregE,
 	output reg[1:0] forwardaE,forwardbE,
-	input wire stall_divE,
 	output wire flushE,
+	input wire stall_divE,
+	output wire stallE,
+	//mf
+	input wire mfhiE,mfloE,
+	output wire[2:0]forwardhiloE,
 	//mem stage
 	input wire[4:0] writeregM,
 	input wire regwriteM,
 	input wire memtoregM,
-
+	input wire hi_writeM,lo_writeM,
 	//write back stage
 	input wire[4:0] writeregW,
-	input wire regwriteW
+	input wire regwriteW,
+	input wire hi_writeW,lo_writeW
     );
 
 	wire lwstallD,branchstallD;
@@ -52,6 +57,15 @@ module hazard(
 	assign forwardaD = (rsD != 0 & rsD == writeregM & regwriteM);
 	assign forwardbD = (rtD != 0 & rtD == writeregM & regwriteM);
 	
+	//HILO  EX阶段读hilo时mf，MEM阶段写hilo时，将hilo_inMW前推
+	assign forwardhiloE = mfhiE ? (hi_writeM ? 3'b011 : 
+                             	  hi_writeW ? 3'b101 :
+                                  3'b001) :
+                     	 mfloE ? (lo_writeM ? 3'b100 :
+                                  lo_writeW ? 3'b110 :
+                                  3'b010) :
+                         3'b000;
+
 	//forwarding sources to E stage (ALU)
 
 	always @(*) begin
@@ -86,8 +100,9 @@ module hazard(
 				(writeregE == rsD | writeregE == rtD) |
 				memtoregM &
 				(writeregM == rsD | writeregM == rtD));
-	assign #1 stallD = lwstallD | branchstallD;
+	assign #1 stallD = lwstallD | branchstallD | stall_divE;
 	assign #1 stallF = stallD;
+	assign #1 stallE = stall_divE;
 		//stalling D stalls all previous stages
 	assign #1 flushE = stallD;
 		//stalling D flushes next stage

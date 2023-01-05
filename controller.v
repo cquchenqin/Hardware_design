@@ -29,31 +29,34 @@ module controller(
 	output wire pcsrcD,branchD,equalD,jumpD,
 	output wire is_IMM,
 	//execute stage
-	input wire flushE,
-	input wire stallE,
+	input wire flushE,stallE,
 	output wire memtoregE,alusrcE,
-	output wire regdstE,regwriteE,	
+	output wire regdstE,regwriteE,
 	output wire[4:0] alucontrolE,
-
+	output wire mfhiE,mfloE,
+	output wire [1:0]hi_mdrE,lo_mdrE,
 	//mem stage
 	output wire memtoregM,memwriteM,
-				regwriteM,hilo_writeM,
-	output wire stall_divM,
+				regwriteM,hi_writeM,lo_writeM,hi_to_regM,lo_to_regM,
 	//write back stage
-	output wire memtoregW,regwriteW
-
+	output wire memtoregW,regwriteW,hi_writeW,lo_writeW
     );
 	
 	//decode stage
 	wire memtoregD,memwriteD,alusrcD,
-		regdstD,regwriteD;
-	wire hilo_writeD;
+		 regdstD,regwriteD;
+	wire hi_writeD,lo_writeD;
+	wire hi_to_regD; //是否将hilo中数据写入寄存器
+	wire lo_to_regD;
+	wire mfhiD,mfloD;
+	wire [1:0] hi_mdrD,lo_mdrD;
 	wire[4:0] alucontrolD;
 
 	//execute stage
 	wire memwriteE;
 	wire hilo_writeE;
-
+	wire hi_to_regE;
+	wire lo_to_regE;
 	maindec md(
 		instrD,
 		memtoregD,memwriteD,
@@ -61,29 +64,33 @@ module controller(
 		regdstD,regwriteD,
 		jumpD,
 		is_IMM,
-		hilo_writeD
+		hi_writeD,lo_writeD,
+		mfhiD,mfloD,
+		hi_mdrD,lo_mdrD,
+		hi_to_regD,
+		lo_to_regD
 		);
 	aludec ad(instrD,alucontrolD);
 
 	assign pcsrcD = branchD & equalD;
 
 	//pipeline registers
-	flopenrc #(12) regE(
+	floprc #(20) regE(
 		clk,
 		rst,
 		~stallE,
 		flushE,
-		{memtoregD,memwriteD,alusrcD,regdstD,regwriteD,alucontrolD,hilo_writeD},
-		{memtoregE,memwriteE,alusrcE,regdstE,regwriteE,alucontrolE,hilo_writeE}
+		{memtoregD,memwriteD,alusrcD,regdstD,regwriteD,alucontrolD,hi_writeD,lo_writeD,hi_to_regD,lo_to_regD,hi_mdrD,lo_mdrD,mfhiD,mfloD},
+		{memtoregE,memwriteE,alusrcE,regdstE,regwriteE,alucontrolE,hi_writeE,lo_writeE,hi_to_regE,lo_to_regE,hi_mdrE,lo_mdrE,mfhiE,mfloE}
 		);
-	flopr #(10) regM(
+	flopr #(9) regM(
 		clk,rst,
-		{memtoregE,memwriteE,regwriteE,stallE,hilo_writeE},
-		{memtoregM,memwriteM,regwriteM,stall_divM,hilo_writeM}
+		{memtoregE,memwriteE,regwriteE,hi_writeE,lo_writeE,hi_to_regE,lo_to_regE},
+		{memtoregM,memwriteM,regwriteM,hi_writeM,lo_writeM,hi_to_regM,lo_to_regM}
 		);
-	flopr #(8) regW(
+	flopr #(9) regW(
 		clk,rst,
-		{memtoregM,regwriteM},
-		{memtoregW,regwriteW}
+		{memtoregM,regwriteM,hi_writeM,lo_writeM},
+		{memtoregW,regwriteW,hi_writeW,lo_writeW}
 		);
 endmodule
