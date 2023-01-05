@@ -18,38 +18,10 @@
 `define SIG_ALU_SRAV    5'b01_010
 
 // move 
-`define ALU_MFHI        5'b1_0001
-`define ALU_MTHI        5'b1_0010
-`define ALU_MFLO        5'b1_0011
-`define ALU_MTLO        5'b1_0100
-
-
+`define ALU_MFHI        5'b01_011
+`define ALU_MFLO        5'b01_100
+`define ALU_MTHI        5'b01_101
+`define ALU_MTLO        5'b01_110
 
 // fail
 `define SIG_ALU_FAIL    5'b11_111
-
-
-
-//`define CONTROLS_NOP  8'b00000000_000_0
-//`define CONTROLS_ANDI  8'b00010100_000_0
-//`define CONTROLS_ORI  8'b00010100_000_0
-//`define CONTROLS_XORI  8'b00010100_000_0
-//`define CONTROLS_LUI  8'b00010100_000_0
-//`define CONTROLS_AND  8'b00001100_000_0
-//`define CONTROLS_OR  8'b00001100_000_0
-//`define CONTROLS_XOR  8'b00001100_000_0
-//`define CONTROLS_NOR  8'b00001100_000_0
-
-////memtoreg,memwrite,branch,alusrc,regdst,regwrite,jump,hilo_write,jal,jr,bal,memen
-//`define CONTROLS_SLL  8'b00001100_000_0
-//`define CONTROLS_SLLV  8'b00001100_000_0
-//`define CONTROLS_SRL  8'b00001100_000_0
-//`define CONTROLS_SRLV  8'b00001100_000_0
-//`define CONTROLS_SRA  8'b00001100_000_0
-//`define CONTROLS_SRAV  8'b00001100_000_0
-                        
-////memtoreg,memwrite,branch,alusrc,regdst,regwrite,jump,hilo_write,jal,jr,bal
-//`define CONTROLS_MFHI 8'b00001100_000_0
-//`define CONTROLS_MTHI 8'b00000001_000_0
-//`define CONTROLS_MFLO 8'b00001100_000_0
-//`define CONTROLS_MTLO 8'b00000001_000_0

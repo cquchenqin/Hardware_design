@@ -49,7 +49,6 @@ module aludec(
 				`FUNC_MFLO: alucontrol = `ALU_MFLO;
 				`FUNC_MTHI: alucontrol = `ALU_MTHI;
 				`FUNC_MTLO: alucontrol = `ALU_MTLO;
-				
 				default: alucontrol = `SIG_ALU_FAIL;				
 			endcase
 		end

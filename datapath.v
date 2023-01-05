@@ -42,10 +42,13 @@ module datapath(
 	input wire regwriteM,
 	output wire[31:0] aluoutM,writedataM,
 	input wire[31:0] readdataM,
-	output wire hilo_writeM,
+	input wire hilo_writeM,
+	input wire hi_to_regM,
+	input wire lo_to_regM,
 	//writeback stage
 	input wire memtoregW,
-	input wire regwriteW
+	input wire regwriteW,
+	input wire hilo_writeW
     );
 	
 	//fetch stage
@@ -70,11 +73,13 @@ module datapath(
 	wire [4:0] saE;
 	//mem stage
 	wire [4:0] writeregM;
+	wire [31:0] hi_outM;
+	wire [31:0] lo_outM;
+	wire [31:0] alu_hilo_dataM;
 	//writeback stage
 	wire [4:0] writeregW;
 	wire [31:0] aluoutW,readdataW,resultW;
-	
-	wire overflow;
+	wire [31:0] alu_hilo_dataW;
 
 	//hazard detection
 	hazard h(
@@ -140,23 +145,22 @@ module datapath(
 	mux3 #(32) forwardaemux(srcaE,resultW,aluoutM,forwardaE,srca2E);
 	mux3 #(32) forwardbemux(srcbE,resultW,aluoutM,forwardbE,srcb2E);
 	mux2 #(32) srcbmux(srcb2E,signimmE,alusrcE,srcb3E);
-	//HILO的输出在MEM阶段   输出到ALU中在EX阶段  
-	alu alu(.clk(clk),.rst(rst),.a(srca2E),.b(srcb3E),.op(alucontrolE),.sa(saE),.hilo_in(hilo_outM),.y(aluoutE),.hilo_out(hilo_inE),.overflow(overflow));
+	alu alu(srca2E,srcb3E,alucontrolE,aluoutE,saE);
 	mux2 #(5) wrmux(rtE,rdE,regdstE,writeregE);
 
 	//mem stage
 	flopr #(32) r1M(clk,rst,srcb2E,writedataM);
 	flopr #(32) r2M(clk,rst,aluoutE,aluoutM);
 	flopr #(5) r3M(clk,rst,writeregE,writeregM);
-	flopenrc #(64) r4M(clk,rst,~stallM,flushM,hilo_inE,hilo_inM);
-
-	//hilo设置在memory阶段
-	//hilo_reg hilo(.clk(~clk),.rst(rst),.we(hilo_writeM&~stall_divM),.hi_i(hilo_inM[63:32]),.lo_i(hilo_inM[31:0]),.hi_o(hilo_outM[63:32]),.lo_o(hilo_outM[31:0]));
-	//dcc
-	
+	hilo_reg hilo(clk,rst,hilo_writeM,aluoutM,aluoutM,hi_outM,lo_outM);
+	// assign aluoutM = ({hi_to_regM,lo_to_regM}==2'b00) ? aluoutM : 
+	// 				 ({hi_to_regM,lo_to_regM}==2'b10) ? hi_outM : 
+	// 				 ({hi_to_regM,lo_to_regM}==2'b01) ? lo_outM : aluoutM;
+	mux3 #(32) alu_hilomuxM(aluoutM,hi_outM,lo_outM,{lo_to_regM,hi_to_regM},alu_hilo_dataM);
 	//writeback stage
 	flopr #(32) r1W(clk,rst,aluoutM,aluoutW);
 	flopr #(32) r2W(clk,rst,readdataM,readdataW);
 	flopr #(5) r3W(clk,rst,writeregM,writeregW);
-	mux2 #(32) resmux(aluoutW,readdataW,memtoregW,resultW);
+	flopr #(32) r4W(clk,rst,alu_hilo_dataM,alu_hilo_dataW);
+	mux2 #(32) resmux(alu_hilo_dataW,readdataW,memtoregW,resultW);
 endmodule

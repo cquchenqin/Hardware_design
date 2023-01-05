@@ -31,14 +31,14 @@ module controller(
 	//execute stage
 	input wire flushE,
 	output wire memtoregE,alusrcE,
-	output wire regdstE,regwriteE,	
+	output wire regdstE,regwriteE,
 	output wire[4:0] alucontrolE,
 
 	//mem stage
 	output wire memtoregM,memwriteM,
-				regwriteM,hilo_writeM,
+				regwriteM,hilo_writeM,hi_to_regM,lo_to_regM,
 	//write back stage
-	output wire memtoregW,regwriteW
+	output wire memtoregW,regwriteW,hilo_writeW
 
     );
 	
@@ -46,12 +46,15 @@ module controller(
 	wire memtoregD,memwriteD,alusrcD,
 		regdstD,regwriteD;
 	wire hilo_writeD;
+	wire hi_to_regD; //是否将hilo中数据写入寄存器
+	wire lo_to_regD;
 	wire[4:0] alucontrolD;
 
 	//execute stage
 	wire memwriteE;
 	wire hilo_writeE;
-
+	wire hi_to_regE;
+	wire lo_to_regE;
 	maindec md(
 		instrD,
 		memtoregD,memwriteD,
@@ -59,28 +62,30 @@ module controller(
 		regdstD,regwriteD,
 		jumpD,
 		is_IMM,
-		hilo_writeD
+		hilo_writeD,
+		hi_to_regD,
+		lo_to_regD
 		);
 	aludec ad(instrD,alucontrolD);
 
 	assign pcsrcD = branchD & equalD;
 
 	//pipeline registers
-	floprc #(10) regE(
+	floprc #(13) regE(
 		clk,
 		rst,
 		flushE,
-		{memtoregD,memwriteD,alusrcD,regdstD,regwriteD,alucontrolD,hilo_writeD},
-		{memtoregE,memwriteE,alusrcE,regdstE,regwriteE,alucontrolE,hilo_writeE}
+		{memtoregD,memwriteD,alusrcD,regdstD,regwriteD,alucontrolD,hilo_writeD,hi_to_regD,lo_to_regD},
+		{memtoregE,memwriteE,alusrcE,regdstE,regwriteE,alucontrolE,hilo_writeE,hi_to_regE,lo_to_regE}
 		);
 	flopr #(8) regM(
 		clk,rst,
-		{memtoregE,memwriteE,regwriteE,hilo_writeE},
-		{memtoregM,memwriteM,regwriteM,hilo_writeM}
+		{memtoregE,memwriteE,regwriteE,hilo_writeE,hi_to_regE,lo_to_regE},
+		{memtoregM,memwriteM,regwriteM,hilo_writeM,hi_to_regM,lo_to_regM}
 		);
 	flopr #(8) regW(
 		clk,rst,
-		{memtoregM,regwriteM},
-		{memtoregW,regwriteW}
+		{memtoregM,regwriteM,hilo_writeM},
+		{memtoregW,regwriteW,hilo_writeW}
 		);
 endmodule

@@ -22,13 +22,12 @@
 
 module hilo_reg(
         input wire clk,rst,
-        input wire we,
+        input wire we,      //HI,LO寄存器写信号
         input wire[31:0] hi_i,
         input wire [31:0] lo_i,
         output reg [31:0] hi_o,
         output reg [31:0] lo_o
     );
-
     always @(posedge clk) begin
         if(rst) begin
             hi_o <= 0;
@@ -39,4 +38,5 @@ module hilo_reg(
             lo_o <= lo_i;
         end
     end
+
 endmodule

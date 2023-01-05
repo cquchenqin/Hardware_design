@@ -37,12 +37,10 @@
 `define FUNC_SRAV   6'b00_0111 
 
 //Move - funct opcode=6'0000000
-`define FUNC_MFHI  	6'b010000
-`define FUNC_MTHI  	6'b010001
-`define FUNC_MFLO  	6'b010010
-`define FUNC_MTLO  	6'b010011
-
-
+`define FUNC_MFHI  	6'b01_0000
+`define FUNC_MFLO  	6'b01_0010
+`define FUNC_MTHI  	6'b01_0001
+`define FUNC_MTLO  	6'b01_0011
 
 // trap instruction (TRAP)
 // TRAP - opcode
