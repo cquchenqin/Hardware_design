@@ -30,5 +30,7 @@
 `define ALU_SUBU        5'b10_010
 `define ALU_SLT         5'b10_011
 `define ALU_SLTU        5'b10_100
+`define ALU_MULT        5'b10_101
+`define ALU_MULTU       5'b10_110
 // fail
 `define SIG_ALU_FAIL    5'b11_111

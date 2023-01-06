@@ -53,6 +53,8 @@
 `define FUNC_SUBU   6'b10_0011
 `define FUNC_SLT    6'b10_1010
 `define FUNC_SLTU   6'b10_1011
+`define MULT        6'b01_1000
+`define MULTU       6'b01_1001
 // trap instruction (TRAP)
 // TRAP - opcode
 `define OP_BREAK    6'b00_0000
